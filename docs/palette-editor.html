@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Choo's Obsidian Template Generator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 11px;
+    background: #202020;
+    color: #d8d8d8;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+
+  .toolbar h1 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #e8e8e8;
+    letter-spacing: 0.02em;
+    margin-right: 4px;
+    white-space: nowrap;
+  }
+
+  .toolbar-hint {
+    font-size: 10px;
+    color: #585858;
+    margin-right: auto;
+  }
+
+  .toolbar-hint code {
+    font-family: "SF Mono", monospace;
+    background: rgba(255,255,255,0.07);
+    padding: 0 4px;
+    border-radius: 3px;
+    color: #909090;
+  }
+
+  /* ── 4-column grid ── */
+  .grid {
+    display: grid;
+    grid-template-columns: 210px 1fr 210px 1fr;
+    gap: 0;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .col {
+    overflow-y: auto;
+    padding: 8px;
+    background: #252525;
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .col:last-child { border-right: none; }
+
+  .col-header {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #585858;
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  /* ── Palette rows ── */
+  .section { margin-bottom: 10px; }
+
+  .section-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #484848;
+    margin-bottom: 4px;
+  }
+
+  .rows { display: flex; flex-direction: column; gap: 2px; }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 0;
+  }
+
+  .row label {
+    flex: 1;
+    font-size: 10px;
+    color: #888888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dot-wrapper {
+    position: relative;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+  }
+
+  .dot-preview {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.18);
+    cursor: pointer;
+    transition: border-color 0.12s;
+  }
+  .dot-preview:hover { border-color: rgba(255,255,255,0.55); }
+
+  .dot-wrapper input[type="color"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+  }
+
+  .hex-input {
+    width: 64px;
+    flex-shrink: 0;
+    background: #252525;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    color: #d8d8d8;
+    font-family: "SF Mono", monospace;
+    font-size: 10px;
+    padding: 2px 5px;
+    outline: none;
+    text-transform: uppercase;
+  }
+
+  .hex-input:focus { border-color: #888888; }
+
+  .slot-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.05);
+    margin: 4px 0;
+  }
+
+  /* ── Font selects ── */
+  .font-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 1px 0;
+  }
+
+  .font-row label {
+    width: 60px;
+    font-size: 10px;
+    color: #888888;
+    flex-shrink: 0;
+  }
+
+  .font-select {
+    flex: 1;
+    background: #252525;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    color: #d8d8d8;
+    font-size: 10px;
+    padding: 2px 5px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .font-select:focus { border-color: #888888; }
+
+  /* ── Action buttons ── */
+  .btn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+
+  button {
+    padding: 4px 9px;
+    border-radius: 5px;
+    border: 1px solid #333333;
+    background: #252525;
+    color: #d8d8d8;
+    font-size: 10px;
+    cursor: pointer;
+    transition: background 0.12s;
+    white-space: nowrap;
+  }
+
+  button:hover { background: #303030; }
+
+  button.primary {
+    background: #303030;
+    border-color: #888888;
+    color: #e8e8e8;
+    font-weight: 600;
+  }
+
+  button.primary:hover { background: #3a3a3a; }
+
+  .copy-msg {
+    font-size: 10px;
+    color: #909090;
+    opacity: 0;
+    transition: opacity 0.3s;
+    align-self: center;
+  }
+
+  /* ── Preview ── */
+  .preview {
+    border-radius: 8px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  .preview h1 { font-size: 17px; font-weight: 800; margin-bottom: 0; letter-spacing: -0.035em; }
+  .preview h2 { font-size: 13px; font-weight: 800; margin-bottom: 0; margin-top: 6px; letter-spacing: -0.025em; }
+  .preview h3 { font-size: 11px; font-weight: 800; margin-bottom: 0; margin-top: 5px; letter-spacing: -0.02em; }
+  .preview h4 { font-size: 11px; font-weight: 700; margin-bottom: 0; margin-top: 4px; }
+  .preview h5 { font-size: 10px; font-weight: 700; margin-bottom: 0; margin-top: 3px; }
+  .preview h6 { font-size: 10px; font-weight: 600; margin-bottom: 0; margin-top: 3px; font-style: italic; }
+  .preview p  { margin-bottom: 4px; font-size: 11px; }
+  .preview code { font-size: 10px; padding: 1px 4px; border-radius: 3px; }
+  .preview a   { text-decoration: none; font-weight: 500; cursor: pointer; padding: 0 2px; border-radius: 2px; }
+  .preview a:hover { background: rgba(208,168,255,0.2); }
+  .preview strong { font-weight: 700; }
+  .preview em  { font-style: italic; }
+  .preview s   { text-decoration: line-through; }
+  .preview mark { padding: 0 2px; border-radius: 2px; }
+  .preview hr  { border: none; border-top: 1px solid; margin: 8px 0; }
+
+  .preview .tag {
+    display: inline-block;
+    padding: 0 7px;
+    border-radius: 10px;
+    font-size: 11px;
+    margin-right: 3px;
+    font-weight: 600;
+    border: 1px solid transparent;
+  }
+
+  .preview .codeblock {
+    font-size: 11px;
+    padding: 7px 10px;
+    border-radius: 5px;
+    margin: 6px 0;
+    line-height: 1.55;
+  }
+
+  .preview blockquote {
+    border-left: 2px solid;
+    padding: 1px 10px;
+    margin: 5px 0;
+    font-style: italic;
+    font-size: 11px;
+  }
+
+  .preview .callout {
+    border-radius: 0 5px 5px 0;
+    border-left: 3px solid;
+    padding: 7px 10px;
+    margin: 6px 0;
+  }
+
+  .preview .callout-title {
+    font-weight: 800;
+    font-size: 9px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .preview .callout-body { font-size: 11px; line-height: 1.5; }
+
+  .preview .task-list { margin: 4px 0 7px; }
+
+  .preview .task-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    margin: 3px 0;
+  }
+
+  .preview .task-cb {
+    width: 13px;
+    height: 13px;
+    border-radius: 3px;
+    border: 2px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .preview ul {
+    padding-left: 14px;
+    margin: 3px 0 5px;
+    font-size: 11px;
+  }
+  .preview ul li { margin: 1px 0; }
+
+  .preview .preview-table {
+    border-collapse: collapse;
+    font-size: 10px;
+    margin: 5px 0;
+    width: 100%;
+  }
+  .preview .preview-table th,
+  .preview .preview-table td {
+    padding: 2px 6px;
+    border: 1px solid;
+    text-align: left;
+  }
+  .preview .preview-table tr:last-child td { border-bottom: 1px solid; }
+
+  /* Table */
+  .preview table { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: 11px; }
+  .preview th { font-weight: 700; text-align: left; padding: 3px 8px; border-bottom: 2px solid; }
+  .preview td { padding: 2px 8px; border-bottom: 1px solid; }
+  .preview tr:last-child td { border-bottom: none; }
+
+  .font-note {
+    font-size: 9px;
+    color: #5A5480;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  /* ── Collapsible section ── */
+  .slot-section { margin-top: 2px; }
+
+  .slot-section > summary {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #484848;
+    cursor: pointer;
+    padding: 4px 0 3px;
+    list-style: none;
+    user-select: none;
+  }
+  .slot-section > summary::-webkit-details-marker { display: none; }
+  .slot-section > summary::before { content: '▾ '; font-size: 14px; vertical-align: middle; line-height: 1; }
+  .slot-section[open] > summary::before { content: '▴ '; font-size: 14px; }
+  .slot-section[open] > summary { color: #888888; }
+
+  .preview .callout.callout-mini { padding: 4px 10px; margin: 2px 0; }
+  .preview .callout.callout-mini .callout-title { margin-bottom: 0; }
+
+  .col.preview-col { min-width: 0; }
+</style>
+</head>
+<body>
+
+<!-- ── Toolbar ── -->
+<div class="toolbar">
+  <h1>✦ Choo's Obsidian Template Generator ✦</h1>
+  <span class="toolbar-hint">drop <code>theme.css</code> + <code>manifest.json</code> in <code>YourVault/.obsidian/themes/Sugar/</code> → Settings → Appearance → Themes</span>
+  <a href="swatches.html" style="margin-left:14px;color:#c9a0ff;font-size:11px;text-decoration:none;white-space:nowrap">swatches →</a>
+  <a href="index.html" style="margin-left:10px;color:#c9a0ff;font-size:11px;text-decoration:none;white-space:nowrap">home</a>
+  <span class="copy-msg" id="copy-msg">Copied!</span>
+</div>
+
+<!-- ── 4-column grid ── -->
+<div class="grid">
+
+  <!-- Col 1: Light palette + fonts -->
+  <div class="col" id="light-col">
+    <div class="col-header">light palette ☀️</div>
+    <div class="section">
+      <div class="rows" id="light-rows"></div>
+    </div>
+    <div class="section">
+      <div class="section-label">fonts</div>
+      <div style="display:flex;flex-direction:column;gap:3px;">
+        <div class="font-row">
+          <label>headers</label>
+          <select class="font-select" id="font-header"></select>
+        </div>
+        <div class="font-row">
+          <label>body</label>
+          <select class="font-select" id="font-body"></select>
+        </div>
+        <div class="font-row">
+          <label>sidebar/UI</label>
+          <select class="font-select" id="font-interface"></select>
+        </div>
+        <div class="font-row">
+          <label>mono</label>
+          <select class="font-select" id="font-mono"></select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Col 2: Light preview -->
+  <div class="col preview-col">
+    <div class="col-header">light preview</div>
+    <div class="preview" id="light-preview">
+      <h1 id="lp-h1">H1: the main title</h1>
+      <h2 id="lp-h2">H2: a section</h2>
+      <h3 id="lp-h3">H3: a subsection</h3>
+      <h4 id="lp-h4">H4: some detail</h4>
+      <h5 id="lp-h5">H5: minor stuff</h5>
+      <h6 id="lp-h6">H6: fine print</h6>
+      <div class="callout" id="lp-callout">
+        <div class="callout-title" id="lp-callout-title">📌 Note</div>
+        <div class="callout-body" id="lp-callout-body"><code id="lp-callout-code">&gt; [!note]</code> this interactive obsidian template generator is dedicated to my fellow 'looking up productivity tips as a way to procrastinate'-enjoyers</div>
+      </div>
+      <ul id="lp-ul">
+        <li>tune → download → admire → never open obsidian again</li>
+        <li>try <strong id="lp-bold">bold</strong>, <em id="lp-italic">italics</em>, <s id="lp-strike">strikethrough</s>, <mark id="lp-mark">highlights</mark>, and <a id="lp-link" href="https://github.com/chooliu/obsidian-sugar-theme">hyperlinks</a> <span class="tag" id="lp-tag1">#blessed</span><span class="tag" id="lp-tag2">#cool</span></li>
+        <li><em id="lp-bull-em">click a dot</em> to open the picker. use ◄ ► to test colors across dark mode and light mode.</li>
+        <li>in your vault, make <code>.obsidian/themes/Sugar/</code> and copy <code>manifest.json</code> and <code>theme.css</code> from the <a href="https://github.com/chooliu/obsidian-sugar-theme">github release</a> <span class="bull-muted">(then use community plugin &gt; style settings &gt; sugar &gt; color scheme to select the specific palette)</span></li>
+      </ul>
+      <hr id="lp-hr">
+      <div class="callout" id="lp-warn">
+        <div class="callout-title" id="lp-warn-title">⚠ Warning</div>
+        <div class="callout-body" id="lp-warn-body">using the <code id="lp-warn-code">&gt; [!warning]</code> callout to let you know the palette names are 'taro', 'sugarplum', 'cinnamon', and 'classic fairyfloss'!</div>
+      </div>
+      <div class="callout" id="lp-tip">
+        <div class="callout-title" id="lp-tip-title">💡 Tip</div>
+        <div class="callout-body" id="lp-tip-body"><code id="lp-tip-code">&gt; [!tip]</code> looking organized &gt; being organized.</div>
+      </div>
+      <div class="preview-extra-callouts" style="display:none;">
+        <div class="callout callout-mini" id="lp-calinfo"><div class="callout-title" id="lp-calinfo-t">ℹ Info</div></div>
+        <div class="callout callout-mini" id="lp-caldanger"><div class="callout-title" id="lp-caldanger-t">⛔ Danger</div></div>
+        <div class="callout callout-mini" id="lp-calquote"><div class="callout-title" id="lp-calquote-t">💬 Quote</div></div>
+      </div>
+      <div class="task-list">
+        <div class="task-item"><span class="task-cb" id="lp-cb-done">✓</span> done with this</div>
+        <div class="task-item"><span class="task-cb" id="lp-cb-open"></span> still need to do this</div>
+      </div>
+      <div class="codeblock" id="lp-block">
+<span id="lp-comment2"># a sample function</span><br>
+<span id="lp-kw">function</span> <span id="lp-fn">chant</span>(<span id="lp-arg">name</span> <span id="lp-op">=</span> <span id="lp-str">"choo"</span>, <span id="lp-arg2">n</span> <span id="lp-op2">=</span> <span id="lp-num">3</span>) {<br>
+&nbsp;&nbsp;<span id="lp-kw2">for</span> (<span id="lp-kw3">let</span> i = 0; i &lt; n; i++) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log("wow " <span id="lp-op3">+</span> name) <span id="lp-comment"># nice</span><br>
+&nbsp;&nbsp;}<br>
+}
+      </div>
+      <table class="preview-table" id="lp-table">
+        <thead><tr><th>arg</th><th>default</th><th>type</th></tr></thead>
+        <tbody>
+          <tr><td>name</td><td>"choo"</td><td>string</td></tr>
+          <tr><td>n</td><td>3</td><td>int</td></tr>
+        </tbody>
+      </table>
+      <blockquote id="lp-bq">"wow choo wow choo wow choo" ―a wise man, 2026</blockquote>
+    </div>
+  </div>
+
+  <!-- Col 3: Dark palette + action buttons -->
+  <div class="col" id="dark-col" style="display:flex;flex-direction:column;gap:8px;">
+    <div class="col-header">dark palette 🌙</div>
+    <div class="section">
+      <div class="rows" id="dark-rows"></div>
+    </div>
+    <div class="btn-grid">
+      <button class="primary" onclick="copyCSS()">Copy CSS</button>
+      <button onclick="downloadCSS()">Download .css</button>
+      <button onclick="syncLightFromDark()">◄ to Light</button>
+      <button onclick="syncDarkFromLight()">to Dark ►</button>
+      <button onclick="resetDefaults()" style="grid-column:1/-1;">Reset defaults</button>
+    </div>
+  </div>
+  <div id="css-output" style="display:none;"></div>
+
+  <!-- Col 4: Dark preview -->
+  <div class="col preview-col">
+    <div class="col-header">dark preview</div>
+    <div class="preview" id="dark-preview">
+      <h1 id="dp-h1">H1: the main title</h1>
+      <h2 id="dp-h2">H2: a section</h2>
+      <h3 id="dp-h3">H3: a subsection</h3>
+      <h4 id="dp-h4">H4: some detail</h4>
+      <h5 id="dp-h5">H5: minor stuff</h5>
+      <h6 id="dp-h6">H6: fine print</h6>
+      <div class="callout" id="dp-callout">
+        <div class="callout-title" id="dp-callout-title">📌 Note</div>
+        <div class="callout-body" id="dp-callout-body"><code id="dp-callout-code">&gt; [!note]</code> this interactive obsidian template generator is dedicated to my fellow 'looking up productivity tips as a way to procrastinate'-enjoyers</div>
+      </div>
+      <ul id="dp-ul">
+        <li>tune → download → admire → never open obsidian again</li>
+        <li>try <strong id="dp-bold">bold</strong>, <em id="dp-italic">italics</em>, <s id="dp-strike">strikethrough</s>, <mark id="dp-mark">highlights</mark>, and <a id="dp-link" href="https://github.com/chooliu/obsidian-sugar-theme">hyperlinks</a> <span class="tag" id="dp-tag1">#blessed</span><span class="tag" id="dp-tag2">#cool</span></li>
+        <li><em id="dp-bull-em">click a dot</em> to open the picker. use ◄ ► to test colors across dark mode and light mode.</li>
+        <li>in your vault, make <code>.obsidian/themes/Sugar/</code> and copy <code>manifest.json</code> and <code>theme.css</code> from the <a href="https://github.com/chooliu/obsidian-sugar-theme">github release</a> <span class="bull-muted">(then use community plugin &gt; style settings &gt; sugar &gt; color scheme to select the specific palette)</span></li>
+      </ul>
+      <hr id="dp-hr">
+      <div class="callout" id="dp-warn">
+        <div class="callout-title" id="dp-warn-title">⚠ Warning</div>
+        <div class="callout-body" id="dp-warn-body">using the <code id="dp-warn-code">&gt; [!warning]</code> callout to let you know the palette names are 'taro', 'sugarplum', 'cinnamon', and 'classic fairyfloss'!</div>
+      </div>
+      <div class="callout" id="dp-tip">
+        <div class="callout-title" id="dp-tip-title">💡 Tip</div>
+        <div class="callout-body" id="dp-tip-body"><code id="dp-tip-code">&gt; [!tip]</code> looking organized &gt; being organized.</div>
+      </div>
+      <div class="preview-extra-callouts" style="display:none;">
+        <div class="callout callout-mini" id="dp-calinfo"><div class="callout-title" id="dp-calinfo-t">ℹ Info</div></div>
+        <div class="callout callout-mini" id="dp-caldanger"><div class="callout-title" id="dp-caldanger-t">⛔ Danger</div></div>
+        <div class="callout callout-mini" id="dp-calquote"><div class="callout-title" id="dp-calquote-t">💬 Quote</div></div>
+      </div>
+      <div class="task-list">
+        <div class="task-item"><span class="task-cb" id="dp-cb-done">✓</span> done with this</div>
+        <div class="task-item"><span class="task-cb" id="dp-cb-open"></span> still need to do this</div>
+      </div>
+      <div class="codeblock" id="dp-block">
+<span id="dp-comment2"># a sample function</span><br>
+<span id="dp-kw">function</span> <span id="dp-fn">chant</span>(<span id="dp-arg">name</span> <span id="dp-op">=</span> <span id="dp-str">"choo"</span>, <span id="dp-arg2">n</span> <span id="dp-op2">=</span> <span id="dp-num">3</span>) {<br>
+&nbsp;&nbsp;<span id="dp-kw2">for</span> (<span id="dp-kw3">let</span> i = 0; i &lt; n; i++) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log("wow " <span id="dp-op3">+</span> name) <span id="dp-comment"># nice</span><br>
+&nbsp;&nbsp;}<br>
+}
+      </div>
+      <table class="preview-table" id="dp-table">
+        <thead><tr><th>arg</th><th>default</th><th>type</th></tr></thead>
+        <tbody>
+          <tr><td>name</td><td>"choo"</td><td>string</td></tr>
+          <tr><td>n</td><td>3</td><td>int</td></tr>
+        </tbody>
+      </table>
+      <blockquote id="dp-bq">"wow choo wow choo wow choo" ―a wise man, 2026</blockquote>
+    </div>
+  </div>
+
+</div><!-- /grid -->
+
+<script>
+// ── Palette slots ──────────────────────────────────────
+const SLOTS = [
+  { key: 'bg',        label: 'bkgd' },
+  { key: 'panel',     label: 'panel' },
+  { key: 'text',      label: 'text' },
+  { key: 'muted',     label: 'muted' },
+  { key: 'DIVIDER' },
+  { key: 'yellow',    label: 'h1' },
+  { key: 'pink',      label: 'h2 / tag' },
+  { key: 'mint',      label: 'h3 / fn' },
+  { key: 'blue',      label: 'h4' },
+  { key: 'lavender',  label: 'h5' },
+  { key: 'peach',     label: 'bold' },
+  { key: 'link',      label: 'hyperlink' },
+  { key: 'salmon',    label: 'keywords' },
+  { key: 'highlight', label: 'highlight' },
+  { key: 'SECTION',   label: '(callouts)' },
+  { key: 'cn',        label: 'note' },
+  { key: 'ci',        label: 'info' },
+  { key: 'ct',        label: 'tip' },
+  { key: 'cw',        label: 'warning' },
+  { key: 'cd',        label: 'danger' },
+  { key: 'cq',        label: 'quote' },
+];
+
+const DEFAULTS = {
+  dark: {
+    bg:        '#5A5475',
+    panel:     '#4E4A6A',
+    text:      '#F0EEFF',
+    muted:     '#7A73A0',
+    yellow:    '#FFE9A0',
+    pink:      '#FFB8D0',
+    mint:      '#9FEDD8',
+    blue:      '#B0D8FF',
+    lavender:  '#C0B0FF',
+    peach:     '#FFD4B0',
+    link:      '#D0A8FF',
+    salmon:    '#FFA09A',
+    highlight: '#61D0FF',
+    cn: '#C0B0FF', ci: '#B0D8FF', ct: '#9FEDD8',
+    cw: '#FFE9A0', cd: '#FFA09A', cq: '#FFB8D0',
+  },
+  light: {
+    bg:        '#FDFAFF',
+    panel:     '#F3EEFF',
+    text:      '#1A1438',
+    muted:     '#8878B0',
+    yellow:    '#FFC400',
+    pink:      '#FFB8D0',
+    mint:      '#50D3B0',
+    blue:      '#B0D8FF',
+    lavender:  '#C0B0FF',
+    peach:     '#FFD4B0',
+    link:      '#D0A8FF',
+    salmon:    '#FFA09A',
+    highlight: '#61D0FF',
+    cn: '#C0B0FF', ci: '#B0D8FF', ct: '#9FEDD8',
+    cw: '#FFE9A0', cd: '#FFA09A', cq: '#FFB8D0',
+  }
+};
+
+let palette = {
+  dark:  { ...DEFAULTS.dark },
+  light: { ...DEFAULTS.light },
+};
+
+// ── Font options ───────────────────────────────────────
+const FONT_OPTS = {
+  body: [
+    { label: 'Helvetica Neue',    stack: '"Helvetica Neue", Arial, Helvetica, sans-serif',             import: null },
+    { label: 'Merriweather',      stack: '"Merriweather", Georgia, serif',                             import: 'https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap' },
+    { label: 'EB Garamond',       stack: '"EB Garamond", Georgia, serif',                              import: 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap' },
+    { label: 'Spectral',          stack: '"Spectral", Georgia, serif',                                 import: 'https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap' },
+    { label: 'Playfair Display',  stack: '"Playfair Display", Georgia, serif',                         import: 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap' },
+    { label: 'System default',    stack: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', import: null, system: true },
+    { label: 'Inter',             stack: '"Inter", sans-serif',                                         import: 'https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,700;1,400&display=swap' },
+    { label: 'IBM Plex Sans',     stack: '"IBM Plex Sans", sans-serif',                                import: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap' },
+    { label: 'Source Sans 3',     stack: '"Source Sans 3", sans-serif',                                import: 'https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap' },
+    { label: 'Lato',              stack: '"Lato", sans-serif',                                         import: 'https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400&display=swap' },
+  ],
+  interface: [],
+  mono: [
+    { label: 'System mono',       stack: '"SF Mono", Menlo, Consolas, monospace',                     import: null, system: true },
+    { label: 'Fira Code',         stack: '"Fira Code", monospace',                                     import: 'https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap' },
+    { label: 'IBM Plex Mono',     stack: '"IBM Plex Mono", monospace',                                 import: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap' },
+    { label: 'Geist Mono',        stack: '"Geist Mono", monospace',                                    import: 'https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;700&display=swap' },
+    { label: 'Source Code Pro',   stack: '"Source Code Pro", monospace',                               import: 'https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,500;0,700;1,400&display=swap' },
+  ],
+  header: [
+    { label: 'Helvetica Neue',    stack: '"Helvetica Neue", Arial, Helvetica, sans-serif',             import: null },
+    { label: 'DM Serif Display',  stack: '"DM Serif Display", Georgia, serif',                         import: 'https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap' },
+    { label: 'Merriweather',      stack: '"Merriweather", Georgia, serif',                             import: 'https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;0,900;1,400&display=swap' },
+    { label: 'System default',   stack: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', import: null, system: true },
+    { label: 'Geist',            stack: '"Geist", sans-serif',                 import: 'https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&display=swap' },
+    { label: 'Geist Mono',       stack: '"Geist Mono", monospace',             import: 'https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;700&display=swap' },
+    { label: 'IBM Plex Mono',    stack: '"IBM Plex Mono", monospace',          import: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap' },
+    { label: 'IBM Plex Serif',   stack: '"IBM Plex Serif", Georgia, serif',    import: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap' },
+  ],
+};
+
+// Sidebar/UI shares the same typeface choices as headers (minus "same as body").
+FONT_OPTS.interface = FONT_OPTS.header.filter(o => o.label !== 'same as body');
+
+let fonts = {
+  body:      FONT_OPTS.body.find(f => f.label === 'Spectral')           || FONT_OPTS.body.find(f => f.system),
+  interface: FONT_OPTS.interface.find(f => f.label === 'IBM Plex Mono') || FONT_OPTS.interface.find(f => f.system),
+  mono:      FONT_OPTS.mono.find(f => f.label === 'IBM Plex Mono')      || FONT_OPTS.mono.find(f => f.system),
+  header:    FONT_OPTS.header.find(f => f.label === 'IBM Plex Mono')    || FONT_OPTS.header.find(f => f.system),
+};
+
+// ── Persistence ────────────────────────────────────────
+function saveState() {
+  try {
+    localStorage.setItem('ff-palette', JSON.stringify(palette));
+    localStorage.setItem('ff-fonts-v2', JSON.stringify({
+      body:      fonts.body.label,
+      interface: fonts.interface.label,
+      mono:      fonts.mono.label,
+      header:    fonts.header.label,
+    }));
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const p = localStorage.getItem('ff-palette');
+    const f = localStorage.getItem('ff-fonts-v2');
+    if (p) {
+      const saved = JSON.parse(p);
+      // Merge with defaults so new keys added later always have a value
+      palette.dark  = { ...DEFAULTS.dark,  ...saved.dark  };
+      palette.light = { ...DEFAULTS.light, ...saved.light };
+    }
+    if (f) {
+      const fi = JSON.parse(f);
+      ['body', 'interface', 'mono', 'header'].forEach(role => {
+        const found = FONT_OPTS[role].find(o => o.label === fi[role]);
+        if (found) fonts[role] = found;
+      });
+    }
+  } catch(e) {}
+}
+
+// ── Font selects ───────────────────────────────────────
+function buildFontSelects() {
+  Object.keys(FONT_OPTS).forEach(role => {
+    const sel = document.getElementById('font-' + role);
+    sel.innerHTML = '';
+    FONT_OPTS[role]
+      .map((opt, i) => ({ opt, i }))
+      .sort((a, b) =>
+        ((b.opt.system === true) - (a.opt.system === true))
+        || a.opt.label.localeCompare(b.opt.label))
+      .forEach(({ opt, i }) => {
+        const o = document.createElement('option');
+        o.value = i;
+        o.textContent = opt.label;
+        sel.appendChild(o);
+      });
+    sel.value = String(FONT_OPTS[role].indexOf(fonts[role]));
+
+    sel.addEventListener('change', () => {
+      fonts[role] = FONT_OPTS[role][+sel.value];
+      if (fonts[role].import) loadGoogleFont(fonts[role].import);
+      applyFonts();
+      renderCSS();
+      saveState();
+    });
+    if (fonts[role].import) loadGoogleFont(fonts[role].import);
+  });
+}
+
+function loadGoogleFont(url) {
+  if (!document.querySelector(`link[href="${url}"]`)) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = url;
+    document.head.appendChild(link);
+  }
+}
+
+function applyFonts() {
+  ['dark-preview', 'light-preview'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.style.fontFamily = fonts.body.stack;
+    el.querySelectorAll('code, .codeblock').forEach(c => {
+      c.style.fontFamily = fonts.mono.stack;
+    });
+    el.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(h => {
+      h.style.fontFamily = fonts.header.stack || fonts.body.stack;
+    });
+  });
+}
+
+// ── Palette rows ───────────────────────────────────────
+function buildRows(theme) {
+  const container = document.getElementById(theme + '-rows');
+  container.innerHTML = '';
+  let currentContainer = container;
+
+  SLOTS.forEach(slot => {
+    if (slot.key === 'DIVIDER') {
+      const d = document.createElement('div');
+      d.className = 'slot-divider';
+      currentContainer.appendChild(d);
+      return;
+    }
+    if (slot.key === 'SECTION') {
+      const details = document.createElement('details');
+      details.className = 'slot-section';
+      const summary = document.createElement('summary');
+      summary.textContent = slot.label;
+      details.appendChild(summary);
+      container.appendChild(details);
+      currentContainer = details;
+      details.addEventListener('toggle', () => {
+        document.querySelectorAll('.preview-extra-callouts').forEach(el => {
+          el.style.display = details.open ? 'block' : 'none';
+        });
+      });
+      return;
+    }
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `
+      <label title="${slot.label}">${slot.label}</label>
+      <div class="dot-wrapper">
+        <div class="dot-preview" id="${theme}-${slot.key}-dot" style="background:${palette[theme][slot.key]}"></div>
+        <input type="color" id="${theme}-${slot.key}-picker" value="${palette[theme][slot.key]}">
+      </div>
+      <input class="hex-input" id="${theme}-${slot.key}-hex" value="${palette[theme][slot.key]}" maxlength="7">
+    `;
+    currentContainer.appendChild(row);
+
+    const picker = document.getElementById(`${theme}-${slot.key}-picker`);
+    const hexIn  = document.getElementById(`${theme}-${slot.key}-hex`);
+    const dot    = document.getElementById(`${theme}-${slot.key}-dot`);
+
+    picker.addEventListener('input', () => {
+      const v = picker.value.toUpperCase();
+      palette[theme][slot.key] = v;
+      hexIn.value = v;
+      dot.style.background = v;
+      update();
+    });
+    hexIn.addEventListener('input', () => {
+      let v = hexIn.value.trim();
+      if (!v.startsWith('#')) v = '#' + v;
+      if (/^#[0-9A-Fa-f]{6}$/.test(v)) {
+        v = v.toUpperCase();
+        palette[theme][slot.key] = v;
+        picker.value = v;
+        dot.style.background = v;
+        update();
+      }
+    });
+  });
+}
+
+// ── Helpers ────────────────────────────────────────────
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  return `${r}, ${g}, ${b}`;
+}
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function set(id, prop, val) {
+  const el = document.getElementById(id);
+  if (el) el.style[prop] = val;
+}
+
+// ── Apply theme to one preview panel ──────────────────
+function applyThemeToPreview(prefix, containerId, p) {
+  const preview = document.getElementById(containerId);
+  if (!preview) return;
+  preview.style.background = p.bg;
+  preview.style.color      = p.text;
+
+  set(prefix+'-h1', 'color', p.yellow);
+  set(prefix+'-h2', 'color', p.pink);
+  set(prefix+'-h3', 'color', p.mint);
+  set(prefix+'-h4', 'color', p.blue);
+  set(prefix+'-h5', 'color', p.lavender);
+  set(prefix+'-h6', 'color', p.muted);
+
+  set(prefix+'-bold',       'color', p.peach);
+  set(prefix+'-italic',     'color', p.pink);
+  set(prefix+'-strike',     'color', p.muted);
+  set(prefix+'-link',       'color', p.link);
+  set(prefix+'-bull-link',  'color', p.link);
+  set(prefix+'-bull-em',    'color', p.pink);
+  set(prefix+'-bull-muted', 'color', p.muted);
+
+  // Table
+  const tableEl = document.getElementById(prefix+'-table');
+  if (tableEl) {
+    tableEl.querySelectorAll('th').forEach(el => {
+      el.style.background  = hexToRgba(p.lavender, 0.15);
+      el.style.color       = p.lavender;
+      el.style.borderColor = hexToRgba(p.muted, 0.3);
+    });
+    tableEl.querySelectorAll('td').forEach(el => {
+      el.style.borderColor = hexToRgba(p.muted, 0.3);
+      el.style.color       = p.text;
+    });
+  }
+  set(prefix+'-tcode', 'background', p.panel);
+  set(prefix+'-tcode', 'color',      p.mint);
+
+  const mark = document.getElementById(prefix+'-mark');
+  if (mark) {
+    mark.style.background = hexToRgba(p.highlight, 0.3);
+    mark.style.color      = p.text;
+  }
+
+  [prefix+'-tag1', prefix+'-tag2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.style.background  = hexToRgba(p.pink, 0.13);
+      el.style.color       = p.pink;
+      el.style.borderColor = hexToRgba(p.pink, 0.35);
+    }
+  });
+
+  set(prefix+'-code', 'background', p.panel);
+  set(prefix+'-code', 'color',      p.mint);
+
+  const bq = document.getElementById(prefix+'-bq');
+  if (bq) {
+    bq.style.borderLeftColor = p.lavender;
+    bq.style.color           = p.muted;
+  }
+
+  const hr = document.getElementById(prefix+'-hr');
+  if (hr) hr.style.borderTopColor = hexToRgba(p.muted, 0.35);
+
+  // Table
+  const th = document.getElementById(prefix+'-th');
+  if (th) {
+    th.style.color = p.yellow;
+    th.style.borderBottomColor = hexToRgba(p.muted, 0.4);
+    const row = th.closest('tr');
+    if (row) row.querySelectorAll('th').forEach(cell => {
+      cell.style.color = p.yellow;
+      cell.style.borderBottomColor = hexToRgba(p.muted, 0.4);
+    });
+  }
+  const altRow = document.getElementById(prefix+'-tr-alt');
+  if (altRow) altRow.style.background = hexToRgba(p.panel, 0.6);
+  const table = document.getElementById(prefix+'-table');
+  if (table) table.querySelectorAll('td').forEach(cell => {
+    cell.style.borderBottomColor = hexToRgba(p.muted, 0.15);
+  });
+
+  const callout = document.getElementById(prefix+'-callout');
+  if (callout) {
+    callout.style.borderLeftColor = p.cn;
+    callout.style.background      = hexToRgba(p.cn, 0.1);
+  }
+  set(prefix+'-callout-title', 'color',      p.cn);
+  set(prefix+'-callout-body',  'color',      p.text);
+  set(prefix+'-callout-code',  'background', p.panel);
+  set(prefix+'-callout-code',  'color',      p.mint);
+
+  const warn = document.getElementById(prefix+'-warn');
+  if (warn) {
+    warn.style.borderLeftColor = p.cw;
+    warn.style.background      = hexToRgba(p.cw, 0.1);
+  }
+  set(prefix+'-warn-title', 'color',      p.cw);
+  set(prefix+'-warn-body',  'color',      p.text);
+  set(prefix+'-warn-code',  'background', p.panel);
+  set(prefix+'-warn-code',  'color',      p.salmon);
+
+  const tip = document.getElementById(prefix+'-tip');
+  if (tip) {
+    tip.style.borderLeftColor = p.ct;
+    tip.style.background      = hexToRgba(p.ct, 0.1);
+  }
+  set(prefix+'-tip-title', 'color', p.ct);
+  set(prefix+'-tip-body',  'color', p.text);
+  set(prefix+'-tip-code',  'background', p.panel);
+  set(prefix+'-tip-code',  'color',      p.ct);
+
+  const miniMap = [
+    { id: prefix+'-caltip',    color: p.ct },
+    { id: prefix+'-calinfo',   color: p.ci },
+    { id: prefix+'-caldanger', color: p.cd },
+    { id: prefix+'-calquote',  color: p.cq },
+  ];
+  miniMap.forEach(({ id, color }) => {
+    const el = document.getElementById(id);
+    if (el) { el.style.borderLeftColor = color; el.style.background = hexToRgba(color, 0.1); }
+    set(id + '-t', 'color', color);
+  });
+
+  const cbDone = document.getElementById(prefix+'-cb-done');
+  if (cbDone) {
+    cbDone.style.borderColor = p.mint;
+    cbDone.style.color       = p.mint;
+    cbDone.style.background  = hexToRgba(p.mint, 0.18);
+  }
+  set(prefix+'-cb-open', 'borderColor', p.muted);
+
+  // Code block
+  set(prefix+'-block',   'background', p.panel);
+  set(prefix+'-block',   'color',      p.text);
+  set(prefix+'-comment', 'color',      p.muted);
+  set(prefix+'-comment2', 'color',     p.muted);
+  set(prefix+'-kw',      'color',      p.salmon);
+  set(prefix+'-kw2',     'color',      p.salmon);
+  set(prefix+'-kw3',     'color',      p.salmon);
+  set(prefix+'-fn',      'color',      p.mint);
+  set(prefix+'-arg',     'color',      p.text);
+  set(prefix+'-arg2',    'color',      p.text);
+  set(prefix+'-num',     'color',      p.peach);
+  set(prefix+'-op',      'color',      p.lavender);
+  set(prefix+'-op2',     'color',      p.lavender);
+  set(prefix+'-op3',     'color',      p.lavender);
+  set(prefix+'-str',     'color',      p.yellow);
+
+  preview.style.fontFamily = fonts.body.stack;
+  preview.querySelectorAll('code, .codeblock').forEach(c => {
+    c.style.fontFamily = fonts.mono.stack;
+  });
+  preview.querySelectorAll('li code').forEach(c => {
+    c.style.background = p.panel;
+    c.style.color      = p.mint;
+  });
+  preview.querySelectorAll('.bull-muted').forEach(e => {
+    e.style.color = p.muted;
+  });
+  preview.querySelectorAll('a').forEach(a => {
+    a.style.color = p.link;
+  });
+  preview.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(h => {
+    h.style.fontFamily = fonts.header.stack || fonts.body.stack;
+  });
+}
+
+function update() {
+  applyThemeToPreview('lp', 'light-preview', palette.light);
+  applyThemeToPreview('dp', 'dark-preview',  palette.dark);
+
+  // Palette columns stay neutral dark grey (#252525, from CSS .col).
+  // Do NOT tint them with the theme bg — the light theme's near-white bg
+  // would override the CSS and wash the whole column (and its hex inputs) light.
+
+  renderCSS();
+  saveState();
+}
+
+// ── CSS output ─────────────────────────────────────────
+function renderCSS() {
+  const d = palette.dark;
+  const l = palette.light;
+
+  const importUrls = [...new Set(
+    [fonts.body, fonts.interface, fonts.mono, fonts.header]
+      .filter(f => f.import).map(f => f.import)
+  )];
+  const importBlock = importUrls.length
+    ? importUrls.map(u => `@import url('${u}');`).join('\n') + '\n\n'
+    : '';
+
+  const block = (p, selector, label) => `/* ── ${label} ── */
+${selector} {
+  --background-primary:             ${p.bg};
+  --background-secondary:           ${p.panel};
+  --text-normal:                    ${p.text};
+  --text-muted:                     ${p.muted};
+  --text-faint:                     ${p.muted};
+  --text-selection:                 ${hexToRgba(p.lavender, 0.25)};
+  --text-highlight-bg:              ${hexToRgba(p.highlight, 0.28)};
+  --color-accent:                   ${p.lavender};
+  --interactive-accent:             ${p.lavender};
+  --background-modifier-hover:      ${hexToRgba(p.lavender, 0.07)};
+  --background-modifier-border:     ${hexToRgba(p.text, 0.1)};
+  --h1-color:                       ${p.yellow};
+  --h2-color:                       ${p.pink};
+  --h3-color:                       ${p.mint};
+  --h4-color:                       ${p.blue};
+  --h5-color:                       ${p.lavender};
+  --h6-color:                       ${p.muted};
+  --bold-color:                     ${p.peach};
+  --italic-color:                   ${p.pink};
+  --blockquote-border-color:        ${p.lavender};
+  --link-color:                     ${p.link};
+  --link-external-color:            ${p.link};
+  --link-color-hover:               ${p.link};
+  --link-unresolved-color:          ${p.muted};
+  --tag-color:                      ${p.pink};
+  --tag-background:                 ${hexToRgba(p.pink, 0.12)};
+  --tag-border-color:               ${hexToRgba(p.pink, 0.35)};
+  --tag-radius:                     20px;
+  --tag-weight:                     600;
+  --tag-padding-x:                  0.55em;
+  --tag-padding-y:                  0.15em;
+  --inline-title-color:             ${p.yellow};
+  --list-marker-color:              ${p.yellow};
+  --checkbox-color:                 ${p.mint};
+  --checkbox-border-color:          ${p.muted};
+  --hr-color:                       ${hexToRgba(p.muted, 0.3)};
+  --table-header-background:        ${hexToRgba(p.panel, 0.8)};
+  --table-header-label-color:       ${p.yellow};
+  --table-row-alt-background:       ${hexToRgba(p.panel, 0.4)};
+  --table-border-color:             ${hexToRgba(p.muted, 0.2)};
+  --code-background:                ${p.panel};
+  --code-normal:                    ${p.mint};
+  --code-keyword:                   ${p.salmon};
+  --code-function:                  ${p.mint};
+  --code-string:                    ${p.yellow};
+  --code-property:                  ${p.peach};
+  --code-operator:                  ${p.lavender};
+  --code-number:                    ${p.peach};
+  --code-punctuation:               ${p.muted};
+  --code-comment:                   ${p.muted};
+  --code-tag:                       ${p.pink};
+  --code-value:                     ${p.lavender};
+  --font-text:                      ${fonts.body.stack};
+  --font-interface:                 ${fonts.interface.stack};
+  --font-ui:                        ${fonts.interface.stack};
+  --font-monospace:                 ${fonts.mono.stack};
+}
+
+/* ── Callout type colors (R, G, B triplet format required by Obsidian) ── */
+${selector} .callout[data-callout="note"],
+${selector} .callout[data-callout="abstract"],
+${selector} .callout[data-callout="summary"],
+${selector} .callout[data-callout="tldr"] {
+  --callout-color: ${hexToRgb(p.cn)};
+}
+${selector} .callout[data-callout="info"],
+${selector} .callout[data-callout="todo"],
+${selector} .callout[data-callout="example"] {
+  --callout-color: ${hexToRgb(p.ci)};
+}
+${selector} .callout[data-callout="tip"],
+${selector} .callout[data-callout="hint"],
+${selector} .callout[data-callout="important"],
+${selector} .callout[data-callout="success"],
+${selector} .callout[data-callout="check"],
+${selector} .callout[data-callout="done"] {
+  --callout-color: ${hexToRgb(p.ct)};
+}
+${selector} .callout[data-callout="warning"],
+${selector} .callout[data-callout="caution"],
+${selector} .callout[data-callout="attention"] {
+  --callout-color: ${hexToRgb(p.cw)};
+}
+${selector} .callout[data-callout="failure"],
+${selector} .callout[data-callout="fail"],
+${selector} .callout[data-callout="missing"],
+${selector} .callout[data-callout="danger"],
+${selector} .callout[data-callout="error"],
+${selector} .callout[data-callout="bug"] {
+  --callout-color: ${hexToRgb(p.cd)};
+}
+${selector} .callout[data-callout="question"],
+${selector} .callout[data-callout="help"],
+${selector} .callout[data-callout="faq"] {
+  --callout-color: ${hexToRgb(p.peach)};
+}
+${selector} .callout[data-callout="quote"],
+${selector} .callout[data-callout="cite"] {
+  --callout-color: ${hexToRgb(p.cq)};
+}
+
+/* Link hover highlight */
+${selector} a:hover,
+${selector} .markdown-rendered a:hover,
+${selector} .cm-hmd-internal-link .cm-underline:hover {
+  background: ${hexToRgba(p.pink, 0.15)};
+  border-radius: 2px;
+  padding: 0 2px;
+}${fonts.header.stack ? `
+
+/* ── Heading font ── */
+${selector} h1, ${selector} h2, ${selector} h3,
+${selector} h4, ${selector} h5, ${selector} h6,
+${selector} .HyperMD-header > .cm-line {
+  font-family: ${fonts.header.stack};
+}` : ''}`;
+
+  const out =
+`/* Obsidian theme CSS snippet */
+/* Place in: YourVault/.obsidian/snippets/obsidian-theme.css */
+/* Enable:   Settings → Appearance → CSS Snippets         */
+
+${importBlock}${block(l, '.theme-light', 'Light mode')}
+
+${block(d, '.theme-dark', 'Dark mode')}`;
+
+  document.getElementById('css-output').textContent = out;
+}
+
+// ── Actions ────────────────────────────────────────────
+function copyCSS() {
+  navigator.clipboard.writeText(document.getElementById('css-output').textContent).then(() => {
+    const msg = document.getElementById('copy-msg');
+    msg.style.opacity = 1;
+    setTimeout(() => msg.style.opacity = 0, 1800);
+  });
+}
+
+function downloadCSS() {
+  const blob = new Blob([document.getElementById('css-output').textContent], { type: 'text/css' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'obsidian-theme.css';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function syncLightFromDark() {
+  const d = palette.dark;
+  palette.light = {
+    bg: palette.light.bg, panel: palette.light.panel,
+    text: palette.light.text, muted: palette.light.muted,
+    yellow: d.yellow, pink: d.pink, mint: d.mint, blue: d.blue,
+    lavender: d.lavender, peach: d.peach, link: d.link,
+    salmon: d.salmon, highlight: d.highlight,
+    cn: d.cn, ci: d.ci, ct: d.ct, cw: d.cw, cd: d.cd, cq: d.cq,
+  };
+  buildRows('light');
+  update();
+}
+
+function syncDarkFromLight() {
+  const l = palette.light;
+  palette.dark = {
+    bg: palette.dark.bg, panel: palette.dark.panel,
+    text: palette.dark.text, muted: palette.dark.muted,
+    yellow: l.yellow, pink: l.pink, mint: l.mint, blue: l.blue,
+    lavender: l.lavender, peach: l.peach, link: l.link,
+    salmon: l.salmon, highlight: l.highlight,
+    cn: l.cn, ci: l.ci, ct: l.ct, cw: l.cw, cd: l.cd, cq: l.cq,
+  };
+  buildRows('dark');
+  update();
+}
+
+function resetDefaults() {
+  palette = { dark: { ...DEFAULTS.dark }, light: { ...DEFAULTS.light } };
+  buildRows('dark');
+  buildRows('light');
+  update();
+}
+
+// ── Init ───────────────────────────────────────────────
+loadState();
+buildFontSelects();
+buildRows('dark');
+buildRows('light');
+applyFonts();
+update();
+</script>
+</body>
+</html>
