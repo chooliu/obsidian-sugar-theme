@@ -113,21 +113,21 @@ body.theme-light:not(.ff-classic):not(.ff-dark):not(.ff-light) {
 
 /* ==== CALLOUT ACCENTS ===================================================== */
 body, body.ff-dark {            /* Taro */
-  --cc-note:192,176,255; --cc-info:176,216,255; --cc-tip:159,237,216; --cc-question:255,233,160;
-  --cc-warning:255,212,176; --cc-danger:255,160,154; --cc-example:208,168,255; --cc-quote:255,184,208;
+  --cc-note:rgb(192,176,255); --cc-info:rgb(176,216,255); --cc-tip:rgb(159,237,216); --cc-question:rgb(255,233,160);
+  --cc-warning:rgb(255,212,176); --cc-danger:rgb(255,160,154); --cc-example:rgb(208,168,255); --cc-quote:rgb(255,184,208);
 }
 body.ff-classic {               /* Fairyfloss */
-  --cc-note:192,176,255; --cc-info:176,216,255; --cc-tip:159,237,216; --cc-question:255,233,160;
-  --cc-warning:255,212,176; --cc-danger:255,160,154; --cc-example:208,168,255; --cc-quote:255,184,208;
+  --cc-note:rgb(192,176,255); --cc-info:rgb(176,216,255); --cc-tip:rgb(159,237,216); --cc-question:rgb(255,233,160);
+  --cc-warning:rgb(255,212,176); --cc-danger:rgb(255,160,154); --cc-example:rgb(208,168,255); --cc-quote:rgb(255,184,208);
 }
 body.ff-light {                 /* Sugarplum */
-  --cc-note:129,100,187; --cc-info:81,119,150; --cc-tip:24,130,106; --cc-question:151,107,0;
-  --cc-warning:175,93,32; --cc-danger:209,64,45; --cc-example:142,89,193; --cc-quote:196,65,120;
+  --cc-note:rgb(129,100,187); --cc-info:rgb(81,119,150); --cc-tip:rgb(24,130,106); --cc-question:rgb(151,107,0);
+  --cc-warning:rgb(175,93,32); --cc-danger:rgb(209,64,45); --cc-example:rgb(142,89,193); --cc-quote:rgb(196,65,120);
 }
 body.ff-cinnamon,
 body.theme-light:not(.ff-classic):not(.ff-dark):not(.ff-light) {  /* Cinnamon */
-  --cc-note:149,103,47; --cc-info:67,121,119; --cc-tip:95,120,23; --cc-question:149,102,11;
-  --cc-warning:185,81,12; --cc-danger:196,68,48; --cc-example:158,97,42; --cc-quote:178,77,121;
+  --cc-note:rgb(149,103,47); --cc-info:rgb(67,121,119); --cc-tip:rgb(95,120,23); --cc-question:rgb(149,102,11);
+  --cc-warning:rgb(185,81,12); --cc-danger:rgb(196,68,48); --cc-example:rgb(158,97,42); --cc-quote:rgb(178,77,121);
 }
 
 /* ==== BACKGROUNDS ========================================================= */
