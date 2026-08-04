@@ -25,7 +25,6 @@ settings:
         label: Fairyfloss Classic
 */
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Spectral:ital,wght@0,400;0,600;1,400&family=Fira+Code:wght@400;500&display=swap');
 
 /* ==== PALETTE TOKENS ====================================================== */
 
@@ -126,7 +125,7 @@ body.ff-light {                 /* Sugarplum */
 }
 body.ff-cinnamon,
 body.theme-light:not(.ff-classic):not(.ff-dark):not(.ff-light) {  /* Cinnamon */
-  --cc-note:rgb(149,103,47); --cc-info:rgb(67,121,119); --cc-tip:rgb(95,120,23); --cc-question:rgb(149,102,11);
+  --cc-note:rgb(149,103,47); --cc-info:rgb(67,121,119); --cc-tip:rgb(95,120,23); --cc-question:rgb(185,133,15);
   --cc-warning:rgb(185,81,12); --cc-danger:rgb(196,68,48); --cc-example:rgb(158,97,42); --cc-quote:rgb(178,77,121);
 }
 
@@ -282,7 +281,7 @@ body.theme-light {
 /* ==== FONTS =============================================================== */
 body.theme-dark,
 body.theme-light {
-  --font-text:          'Spectral', Georgia, Cambria, 'Times New Roman', serif;
+  --font-text:          Spectral, Georgia, Cambria, 'Times New Roman', serif;
   --font-interface:     'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-ui:            'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-monospace:     'IBM Plex Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -687,3 +686,65 @@ body.ff-cinnamon .markdown-rendered blockquote          ,
 body.theme-light:not(.ff-classic):not(.ff-dark):not(.ff-light) .markdown-rendered blockquote          { background: rgba(150, 110, 60, 0.06); }
 body.ff-cinnamon .markdown-rendered mark                ,
 body.theme-light:not(.ff-classic):not(.ff-dark):not(.ff-light) .markdown-rendered mark                { background: rgba(255, 196, 0, 0.20); }
+
+/* ==== MERMAID ============================================================= */
+
+.mermaid .node rect,
+.mermaid .node circle,
+.mermaid .node ellipse,
+.mermaid .node polygon,
+.mermaid .node path,
+.mermaid .label-container {
+  fill: var(--ff-panel) !important;
+  stroke: var(--ff-lavender) !important;
+}
+.mermaid .node .label,
+.mermaid .nodeLabel,
+.mermaid .node text {
+  color: var(--ff-text) !important;
+  fill: var(--ff-text) !important;
+}
+
+body.ff-dark  { --mermaid-edge: var(--h5-color); }
+body.ff-light { --mermaid-edge: var(--ff-muted); }
+.mermaid .edgePath .path,
+.mermaid .edgePaths .path,
+.mermaid .flowchart-link {
+  stroke: var(--mermaid-edge, var(--ff-text)) !important;
+}
+.mermaid .marker,
+.mermaid .marker path,
+.mermaid marker path,
+.mermaid .arrowMarkerPath,
+.mermaid .arrowheadPath {
+  fill: var(--mermaid-edge, var(--ff-text)) !important;
+  stroke: var(--mermaid-edge, var(--ff-text)) !important;
+}
+.mermaid .edgeLabel,
+.mermaid .edgeLabel * {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--ff-panel) !important;
+}
+body.ff-classic .mermaid .edgeLabel,
+body.ff-classic .mermaid .edgeLabel * {
+  color: var(--ff-text) !important;
+}
+.mermaid .edgeLabel rect,
+.mermaid .edgeLabels rect,
+.mermaid rect.background {
+  fill: transparent !important;
+}
+.mermaid .cluster rect {
+  fill: var(--ff-ribbon) !important;
+  stroke: var(--ff-border) !important;
+}
+.mermaid .cluster .label,
+.mermaid .cluster text {
+  color: var(--ff-text) !important;
+  fill: var(--ff-text) !important;
+}
+
+.mermaid svg { max-width: 500px !important; height: auto; display: block; margin-inline: auto; }
+.mermaid .nodeLabel, .mermaid .edgeLabel, .mermaid .cluster-label,
+.mermaid span, .mermaid tspan { font-size: 0.78em !important; }

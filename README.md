@@ -38,6 +38,9 @@ preview the rest in the `swatches.html`! [(live link here)](https://chooliu.gith
 * ships with **palette editor** stand-alone, interactive .html file: use `palette-editor.html` to help pick colors and edit `theme.css`!
 * [chooliu.github.io/obsidian-sugar-template](https://chooliu.github.io/obsidian-sugar-theme/) → palette editor → copy/download `.css`
 
+## suggested fonts
+
+fonts used in the preview image are [https://fonts.google.com/specimen/Spectral](spectral) and [https://fonts.google.com/specimen/IBM+Plex+Serif](ibm plex serif) (or [https://fonts.google.com/specimen/Fira+Code](fira code)). can be swapped out in `theme.css`.
 
 ## credits
 
