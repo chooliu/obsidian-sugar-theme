@@ -1,6 +1,6 @@
 # 🍰 Sugar
 
-`chooliu/obsidian-sugar-theme`
+`chooliu/obsidian-sugar-template`
 
 a theme set for obsidian with four sweet pastel palettes, plus a little tool for baking your own.
 
@@ -36,11 +36,11 @@ preview the rest in the `swatches.html`! [(live link here)](https://chooliu.gith
 ## bake your own!
 
 * ships with **palette editor** stand-alone, interactive .html file: use `palette-editor.html` to help pick colors and edit `theme.css`!
-* [chooliu.github.io/obsidian-sugar-theme](https://chooliu.github.io/obsidian-sugar-theme/) → palette editor → copy/download `.css`
+* [chooliu.github.io/obsidian-sugar-template](https://chooliu.github.io/obsidian-sugar-theme/) → palette editor → copy/download `.css`
 
 ## suggested fonts
 
-fonts used in the preview image are [spectral](https://fonts.google.com/specimen/Spectral) and (ibm plex serif)[https://fonts.google.com/specimen/IBM+Plex+Serif] (or [fira code](https://fonts.google.com/specimen/Fira+Code)). can be swapped out in `theme.css`.
+fonts used in the preview image are [spectral](https://fonts.google.com/specimen/Spectral) and [ibm plex serif](https://fonts.google.com/specimen/IBM+Plex+Serif) (or [fira code](https://fonts.google.com/specimen/Fira+Code)). can be swapped out in `theme.css`.
 
 ## credits
 
